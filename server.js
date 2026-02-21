@@ -16,7 +16,8 @@ const complaintsRouter = require("./routes/complaint");
         process.env.FRONTEND_URL || 'http://localhost:5173',
         'http://localhost:5174',
         'https://hostelmanagefrontend-git-main-harish-ss-projects-85e28866.vercel.app',
-        'https://hostelmanagefrontend-flub55008-harish-ss-projects-85e28866.vercel.app'
+        'https://hostelmanagefrontend-flub55008-harish-ss-projects-85e28866.vercel.app',
+        'https://frontendhostelmanage.vercel.app'
     ];
     app.use(cors({
         origin: allowedOrigins,
