@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const adminUser = async (req, res) => {
     try {
-        const { email, password, name, phone } = req.body;
+        const { email, password, name, phone, role } = req.body;
         
         const existingUser = await users.findOne({ $or: [{ email }, { phone }] });
         if(existingUser) {
@@ -22,7 +22,7 @@ const adminUser = async (req, res) => {
         }
         
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await users.create({email, password: hashedPassword, name, phone});
+        const user = await users.create({email, password: hashedPassword, name, phone, role: role || 'student'});
         res.status(201).json({ message: "User registered successfully", user });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -31,8 +31,8 @@ const adminUser = async (req, res) => {
 
 const studentUser = async (req, res) => {  
     try {
-        const { email, password, phone } = req.body;
-        console.log('Login attempt:', { email, phone });
+        const { email, password, phone, role } = req.body;
+        console.log('Login attempt:', { email, phone, role });
         
         const phoneRegex = /^[0-9]{10}$/;
         if(!phoneRegex.test(phone)) {
@@ -44,7 +44,11 @@ const studentUser = async (req, res) => {
         
         if(!user) {
             return res.status(400).json({ error: "Invalid email, phone, or password" });
-        } 
+        }
+        
+        if(role && user.role !== role) {
+            return res.status(403).json({ error: `This account is registered as ${user.role}, not ${role}` });
+        }
         
         const isPasswordValid = await bcrypt.compare(password, user.password);
         console.log('Password valid:', isPasswordValid);
